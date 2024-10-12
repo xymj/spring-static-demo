@@ -12,10 +12,7 @@
     <name>spring-static-demo-web</name>
     <description>web 模块，对应 MVC 的 V 概念，存放视图层的逻辑</description>
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jdbc</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
@@ -45,6 +42,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.static.demo</groupId>
+            <artifactId>spring-static-demo-service</artifactId>
         </dependency>
     </dependencies>
 
