@@ -83,7 +83,7 @@ public class LangFlowController {
     }
 
 
-    @GetMapping("flows")
+    @PostMapping("flows")
     public JsonNode flows() throws IOException {
         JsonNode jsonNode = objectMapper.readTree(this.getClass().getClassLoader().getResourceAsStream("flows.json" ));
         return jsonNode;
