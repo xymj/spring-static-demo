@@ -11,6 +11,7 @@ export default function ShadTooltip({
   delayDuration = 500,
 }: ShadToolTipType): JSX.Element {
   return content ? (
+    //TooltipPrimitive 显示和隐藏逻辑：自动处理 Tooltip 的显示和隐藏，通常在鼠标悬停或聚焦时显示，在鼠标离开或失去焦点时隐藏。
     <Tooltip defaultOpen={!children} delayDuration={delayDuration}>
       <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>
       <TooltipContent

@@ -16,6 +16,7 @@ export default function NewFlowCardComponent() {
   const setFolderUrl = useFolderStore((state) => state.setFolderUrl);
 
   return (
+    // 新建空白flow触发，新建flow
     <Card
       onClick={() => {
         addFlow(true).then((id) => {

@@ -29,6 +29,7 @@ export default function DropdownButton({
               "relative" + dropdownOptions ? "pl-[12px]" : "pl-[12px] pr-10"
             }
             onClick={(event) => {
+              // 阻止事件传播和默认
               event.stopPropagation();
               event.preventDefault();
               onFirstBtnClick();

@@ -10,7 +10,7 @@ import ExtraSidebar from "./components/extraSidebarComponent";
 
 export default function FlowPage({ view }: { view?: boolean }): JSX.Element {
   const setCurrentFlowId = useFlowsManagerStore(
-    (state) => state.setCurrentFlowId,
+    (state) => state.setCurrentFlowId
   );
   const version = useDarkStore((state) => state.version);
   const setOnFlowPage = useFlowStore((state) => state.setOnFlowPage);
@@ -32,6 +32,7 @@ export default function FlowPage({ view }: { view?: boolean }): JSX.Element {
     setCurrentFlowId(id!);
     setOnFlowPage(true);
 
+    // 离开当前页调用
     return () => {
       setOnFlowPage(false);
     };

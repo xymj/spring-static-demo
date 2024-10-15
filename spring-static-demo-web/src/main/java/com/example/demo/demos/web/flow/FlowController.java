@@ -1,4 +1,4 @@
-package com.example.demo.demos.web.langflow;
+package com.example.demo.demos.web.flow;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,15 +8,30 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-/**
- * @author liujiangtao
- * @create 2024/10/12 13:42
- * @description
- */
 
+/**
+ * 需适配接口：
+ *  addFlow：/api/v1/flows  POST
+ *  saveFlow: /api/v1/flows/{flow_id}  PATCH
+ *  refreshFlows: /api/v1/flows  GET
+ *  getFlow: /api/v1/flows/{flow_id}  GET
+ *  deleteFlow: /api/v1/flows/{flow_id}  DELETE
+ *  batch_delete_flows: /api/v1/flows/  DELETE
+ *
+ *  uploadFlows: /api/v1/flows/upload  POST
+ *  downloadFlow: /api/v1/flows/download/  GET
+ *
+ * store接口：
+ *  Saves a new flow to the database.
+ *      /api/v1/store/components/ POST
+ *
+ *  节点类型：
+ *     getAll
+ *     /api/v1/all?force_refresh=${force_refresh}
+ */
 @RestController
 @RequestMapping("/api/v1/")
-public class LangFlowController {
+public class FlowController {
 
     @Autowired
     private ObjectMapper objectMapper;

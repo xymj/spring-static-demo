@@ -39,9 +39,137 @@ export default function ExtraSidebar(): JSX.Element {
   const setErrorData = useAlertStore((state) => state.setErrorData);
   const [dataFilter, setFilterData] = useState(data);
   const [search, setSearch] = useState("");
+
+  /**
+   * 这个函数接收两个参数：一个是 React.DragEvent 对象，另一个是包含拖放数据的对象。以下是代码的详细解释和一些改进建议：
+
+    代码解析
+    参数
+    event: React.DragEvent<any>: 拖动事件对象。
+    data: { type: string; node?: APIClassType }: 自定义数据对象，包含拖放类型和其他相关信息。
+    代码逻辑
+    克隆当前节点:
+
+    JavaScript
+    var crt = event.currentTarget.cloneNode(true);
+    克隆当前拖动的目标节点，并保留其所有子节点。
+    设置克隆节点的位置和样式:
+
+    JavaScript
+    crt.style.position = "absolute";
+    crt.style.top = "-500px";
+    crt.style.right = "-500px";
+    crt.classList.add("cursor-grabbing");
+    将克隆节点定位到屏幕不可见的位置（top: -500px; right: -500px;）。
+    添加 cursor-grabbing 类，以改变鼠标指针样式。
+    将克隆节点添加到文档体:
+
+    JavaScript
+    document.body.appendChild(crt);
+    将克隆节点添加到文档体中，使其成为页面的一部分。
+    设置拖动图像:
+
+    JavaScript
+    event.dataTransfer.setDragImage(crt, 0, 0);
+    使用克隆节点作为拖动时的视觉反馈图像，并将其位置设置为相对于鼠标指针的偏移量（这里是 (0, 0)）。
+    设置拖放数据:
+
+    JavaScript
+    event.dataTransfer.setData("nodedata", JSON.stringify(data));
+    将自定义数据对象转换为 JSON 字符串，并存储在 dataTransfer 对象中，键名为 "nodedata"。
+    改进建议
+    清理克隆节点:
+
+    在拖动结束后清除克隆节点，以避免内存泄漏。
+    错误处理:
+
+    添加错误处理机制，确保代码健壮性。
+    优化样式设置:
+
+    使用 CSS 类来管理样式变化，而不是直接修改内联样式。
+    改进后的代码
+    JavaScriptReact
+    import React from 'react';
+
+    function onDragStart(
+      event: React.DragEvent<any>,
+      data: { type: string; node?: APIClassType },
+    ): void {
+      try {
+        // 克隆当前节点
+        const clonedNode = event.currentTarget.cloneNode(true);
+
+        // 设置克隆节点的位置和样式
+        clonedNode.style.position = "absolute";
+        clonedNode.style.top = "-500px";
+        clonedNode.style.right = "-500px";
+        clonedNode.classList.add("cursor-grabbing");
+
+        // 将克隆节点添加到文档体
+        document.body.appendChild(clonedNode);
+
+        // 设置拖动图像
+        event.dataTransfer.setDragImage(clonedNode, 0, 0);
+
+        // 设置拖放数据
+        event.dataTransfer.setData("nodedata", JSON.stringify(data));
+
+        // 注册拖动结束事件处理程序，以清理克隆节点
+        event.dataTransfer.effectAllowed = "move"; // 或者 "copy" 等其他效果
+        event.dataTransfer.dropEffect = "move"; // 或者 "copy" 等其他效果
+
+        const cleanupClone = () => {
+          if (clonedNode.parentNode) {
+            clonedNode.parentNode.removeChild(clonedNode);
+          }
+          document.removeEventListener("dragend", cleanupClone);
+        };
+
+        document.addEventListener("dragend", cleanupClone);
+      } catch (error) {
+        console.error("Error in onDragStart:", error);
+      }
+    }
+
+    // 示例组件
+    const DraggableItem = ({ data, children }) => {
+      const handleDragStart = (event) => {
+        onDragStart(event, data);
+      };
+
+      return (
+        <div draggable onDragStart={handleDragStart}>
+          {children}
+        </div>
+      );
+    };
+
+    // 示例应用
+    const App = () => {
+      const data = { type: "ChatInput", node: { id: 1, name: "Chat Input Node" } };
+
+      return (
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <DraggableItem data={data}>Drag me</DraggableItem>
+          其他组件
+        </div>
+      );
+    };
+
+    export default App;
+    解释改进
+    清理克隆节点:
+    在 dragend 事件中调用 cleanupClone 函数，移除克隆节点并解除事件监听器。
+    错误处理:
+    使用 try-catch 块捕获潜在的错误，并记录错误信息。
+    优化样式设置:
+
+    使用 classList.add 方法添加样式类，而不是直接修改内联样式。
+
+    */
   function onDragStart(
     event: React.DragEvent<any>,
-    data: { type: string; node?: APIClassType },
+    data: { type: string; node?: APIClassType }
   ): void {
     //start drag event
     var crt = event.currentTarget.cloneNode(true);
@@ -67,7 +195,7 @@ export default function ExtraSidebar(): JSX.Element {
         let keys = Object.keys(data[d]).filter(
           (nd) =>
             nd.toLowerCase().includes(e.toLowerCase()) ||
-            data[d][nd].display_name?.toLowerCase().includes(e.toLowerCase()),
+            data[d][nd].display_name?.toLowerCase().includes(e.toLowerCase())
         );
         keys.forEach((element) => {
           ret[d][element] = data[d][element];
@@ -134,7 +262,7 @@ export default function ExtraSidebar(): JSX.Element {
 
             if (filtered.some((x) => x !== "")) {
               let keys = Object.keys(dataClone[d]).filter((nd) =>
-                filtered.includes(nd),
+                filtered.includes(nd)
               );
               Object.keys(dataClone[d]).forEach((element) => {
                 if (!keys.includes(element)) {
@@ -171,7 +299,7 @@ export default function ExtraSidebar(): JSX.Element {
 
             if (filtered.some((x) => x !== "")) {
               let keys = Object.keys(dataClone[d]).filter((nd) =>
-                filtered.includes(nd),
+                filtered.includes(nd)
               );
               Object.keys(dataClone[d]).forEach((element) => {
                 if (!keys.includes(element)) {
@@ -200,7 +328,7 @@ export default function ExtraSidebar(): JSX.Element {
             "extra-side-bar-buttons gap-[4px] text-sm font-semibold",
             !hasApiKey || !validApiKey || !hasStore
               ? "button-disable cursor-default text-muted-foreground"
-              : "",
+              : ""
           )}
         >
           <IconComponent
@@ -209,14 +337,14 @@ export default function ExtraSidebar(): JSX.Element {
               "-m-0.5 -ml-1 h-6 w-6",
               !hasApiKey || !validApiKey || !hasStore
                 ? "extra-side-bar-save-disable"
-                : "",
+                : ""
             )}
           />
           Share
         </button>
       </ShareModal>
     ),
-    [hasApiKey, validApiKey, currentFlow, hasStore],
+    [hasApiKey, validApiKey, currentFlow, hasStore]
   );
 
   const ExportMemo = useMemo(
@@ -227,7 +355,7 @@ export default function ExtraSidebar(): JSX.Element {
         </button>
       </ExportModal>
     ),
-    [],
+    []
   );
 
   const getIcon = useMemo(() => {
@@ -315,8 +443,8 @@ export default function ExtraSidebar(): JSX.Element {
                     .sort((a, b) =>
                       sensitiveSort(
                         dataFilter[SBSectionName][a].display_name,
-                        dataFilter[SBSectionName][b].display_name,
-                      ),
+                        dataFilter[SBSectionName][b].display_name
+                      )
                     )
                     .map((SBItemName: string, index) => (
                       <ShadTooltip
@@ -357,7 +485,7 @@ export default function ExtraSidebar(): JSX.Element {
               </DisclosureComponent>
             ) : (
               <div key={index}></div>
-            ),
+            )
           )}{" "}
         <ParentDisclosureComponent
           defaultOpen={search.length !== 0 || getFilterEdge.length !== 0}
@@ -395,8 +523,8 @@ export default function ExtraSidebar(): JSX.Element {
                         .sort((a, b) =>
                           sensitiveSort(
                             dataFilter[SBSectionName][a].display_name,
-                            dataFilter[SBSectionName][b].display_name,
-                          ),
+                            dataFilter[SBSectionName][b].display_name
+                          )
                         )
                         .map((SBItemName: string, index) => (
                           <ShadTooltip
@@ -470,7 +598,7 @@ export default function ExtraSidebar(): JSX.Element {
                 </Fragment>
               ) : (
                 <div key={index}></div>
-              ),
+              )
             )}
         </ParentDisclosureComponent>
       </div>

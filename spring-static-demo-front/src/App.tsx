@@ -138,14 +138,14 @@ export default function App() {
   return (
     //need parent component with width and height
     <div className="flex h-full flex-col">
-      <ErrorBoundary
+      {/* <ErrorBoundary
         onReset={() => {
           // any reset function
         }}
         FallbackComponent={CrashErrorComponent}
-      >
-        <>
-          {/* {
+      > */}
+      <>
+        {/* {
             <FetchErrorComponent
               description={FETCH_ERROR_DESCRIPION}
               message={FETCH_ERROR_MESSAGE}
@@ -161,17 +161,18 @@ export default function App() {
             ></FetchErrorComponent>
           } */}
 
-          <Case condition={isLoadingApplication}>
+        {/* <Case condition={isLoadingApplication}>
             <div className="loading-page-panel">
               <LoadingComponent remSize={50} />
             </div>
-          </Case>
+          </Case> */}
 
-          <Case condition={!isLoadingApplication}>
+        {/* <Case condition={!isLoadingApplication}>
             <Router />
-          </Case>
-        </>
-      </ErrorBoundary>
+          </Case> */}
+      </>
+      {/* </ErrorBoundary> */}
+      <Router />
       <div></div>
       <div className="app-div">
         <AlertDisplayArea />
