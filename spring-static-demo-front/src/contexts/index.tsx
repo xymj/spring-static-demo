@@ -13,14 +13,14 @@ export default function ContextWrapper({ children }: { children: ReactNode }) {
     <>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-          {/* <AuthProvider> */}
-            {/* <TooltipProvider> */}
+          <AuthProvider>
+            <TooltipProvider>
               <ReactFlowProvider>
-                {/* <ApiInterceptor /> */}
+                <ApiInterceptor />
                 {children}
               </ReactFlowProvider>
-            {/* </TooltipProvider> */}
-          {/* </AuthProvider> */}
+            </TooltipProvider>
+          </AuthProvider>
         </QueryClientProvider>
       </BrowserRouter>
     </>

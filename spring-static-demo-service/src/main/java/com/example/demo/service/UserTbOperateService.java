@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -18,5 +19,9 @@ public class UserTbOperateService {
 
   public List<UserTb> getUserTbs() {
     return userTbMapper.getUserTbs();
+  }
+
+  public UserTb getUserTb(UUID uuid) {
+    return userTbMapper.getUserTb(uuid);
   }
 }

@@ -549,9 +549,9 @@ export const NOUNS: string[] = [
  * @constant
  *
  */
-export const USER_PROJECTS_HEADER = "测 My Collection";
+export const USER_PROJECTS_HEADER = "My Collection";
 
-export const DEFAULT_FOLDER = "测 My Projects";
+export const DEFAULT_FOLDER = "My Projects";
 
 /**
  * Header text for admin page

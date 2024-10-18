@@ -48,9 +48,9 @@ const Router = () => {
         <Route
           path="/"
           element={
-            // <ProtectedRoute>
-            <HomePage />
-            // </ProtectedRoute>
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
           }
         >
           <Route index element={<Navigate replace to={"all"} />} />

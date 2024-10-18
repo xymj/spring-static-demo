@@ -8,6 +8,7 @@ export const useStoreStore = create<StoreStoreType>((set) => ({
   hasApiKey: false,
   loadingApiKey: true,
   checkHasStore: () => {
+    console.log("checkHasStore run");
     checkHasStore().then((res) => {
       set({ hasStore: res?.enabled ?? false });
     });
@@ -17,6 +18,7 @@ export const useStoreStore = create<StoreStoreType>((set) => ({
     set(() => ({ loadingApiKey: loadingApiKey })),
   updateHasApiKey: (hasApiKey) => set(() => ({ hasApiKey: hasApiKey })),
   fetchApiData: async () => {
+    console.log("fetchApiData run");
     set({ loadingApiKey: true });
     try {
       const res = await checkHasApiKey();

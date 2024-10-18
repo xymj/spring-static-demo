@@ -52,57 +52,36 @@ export default function App() {
     }
   }, [dark]);
 
-  // useEffect(() => {
-  //   const abortController = new AbortController();
-  //   const isLoginPage = location.pathname.includes("login");
-
-  //   autoLogin(abortController.signal)
-  //     .then(async (user) => {
-  //       if (user && user["access_token"]) {
-  //         user["refresh_token"] = "auto";
-  //         login(user["access_token"]);
-  //         setUserData(user);
-  //         setAutoLogin(true);
-  //         fetchAllData();
-  //       }
-  //     })
-  //     .catch(async (error) => {
-  //       if (error.name !== "CanceledError") {
-  //         setAutoLogin(false);
-  //         if (isAuthenticated && !isLoginPage) {
-  //           getUser();
-  //           fetchAllData();
-  //         } else {
-  //           setLoading(false);
-  //           useFlowsManagerStore.setState({ isLoading: false });
-  //         }
-  //       }
-  //     });
-
-  //   /*
-  //     Abort the request as it isn't needed anymore, the component being
-  //     unmounted. It helps avoid, among other things, the well-known "can't
-  //     perform a React state update on an unmounted component" warning.
-  //   */
-  //   return () => abortController.abort();
-  // }, []);
-
   useEffect(() => {
     const abortController = new AbortController();
     const isLoginPage = location.pathname.includes("login");
 
-    const user = {
-      id: "default-id",
-      username: "default-username",
-      is_active: true,
-      is_superuser: true,
-      profile_image: "default-profile-image-url",
-      create_at: new Date(),
-      updated_at: new Date(),
-    };
-    setUserData(user);
-    setAutoLogin(true);
-    fetchAllData();
+    console.log("autoLogin start");
+    autoLogin(abortController.signal)
+      .then(async (user) => {
+        console.log(`autoLogin success ${user}`);
+
+        if (user && user["access_token"]) {
+          user["refresh_token"] = "auto";
+          console.log(`start login`);
+          login(user["access_token"]);
+          setUserData(user);
+          setAutoLogin(true);
+          fetchAllData();
+        }
+      })
+      .catch(async (error) => {
+        if (error.name !== "CanceledError") {
+          setAutoLogin(false);
+          if (isAuthenticated && !isLoginPage) {
+            getUser();
+            fetchAllData();
+          } else {
+            setLoading(false);
+            useFlowsManagerStore.setState({ isLoading: false });
+          }
+        }
+      });
 
     /*
       Abort the request as it isn't needed anymore, the component being
@@ -111,6 +90,31 @@ export default function App() {
     */
     return () => abortController.abort();
   }, []);
+
+  // useEffect(() => {
+  //   const abortController = new AbortController();
+  //   const isLoginPage = location.pathname.includes("login");
+
+  //   const user = {
+  //     id: "default-id",
+  //     username: "default-username",
+  //     is_active: true,
+  //     is_superuser: true,
+  //     profile_image: "default-profile-image-url",
+  //     create_at: new Date(),
+  //     updated_at: new Date(),
+  //   };
+  //   setUserData(user);
+  //   setAutoLogin(true);
+  //   fetchAllData();
+
+  //   /*
+  //     Abort the request as it isn't needed anymore, the component being
+  //     unmounted. It helps avoid, among other things, the well-known "can't
+  //     perform a React state update on an unmounted component" warning.
+  //   */
+  //   return () => abortController.abort();
+  // }, []);
 
   const fetchAllData = async () => {
     setTimeout(async () => {
@@ -132,20 +136,20 @@ export default function App() {
     });
   };
 
-  // const isLoadingApplication = isLoading || isLoadingFolders || true;
-  const isLoadingApplication = false;
+  const isLoadingApplication = isLoading || isLoadingFolders;
+  // const isLoadingApplication = false;
 
   return (
     //need parent component with width and height
     <div className="flex h-full flex-col">
-      {/* <ErrorBoundary
+      <ErrorBoundary
         onReset={() => {
           // any reset function
         }}
         FallbackComponent={CrashErrorComponent}
-      > */}
-      <>
-        {/* {
+      >
+        <>
+          {/* {
             <FetchErrorComponent
               description={FETCH_ERROR_DESCRIPION}
               message={FETCH_ERROR_MESSAGE}
@@ -161,18 +165,18 @@ export default function App() {
             ></FetchErrorComponent>
           } */}
 
-        {/* <Case condition={isLoadingApplication}>
+          <Case condition={isLoadingApplication}>
             <div className="loading-page-panel">
               <LoadingComponent remSize={50} />
             </div>
-          </Case> */}
+          </Case>
 
-        {/* <Case condition={!isLoadingApplication}>
+          <Case condition={!isLoadingApplication}>
             <Router />
-          </Case> */}
-      </>
-      {/* </ErrorBoundary> */}
-      <Router />
+          </Case>
+        </>
+      </ErrorBoundary>
+      {/* <Router /> */}
       <div></div>
       <div className="app-div">
         <AlertDisplayArea />

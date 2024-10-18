@@ -32,3 +32,5 @@ build/
 ### VS Code ###
 .vscode/
 /spring-static-demo-front/node_modules/
+/spring-static-demo-start/src/main/resources/rebel.xml
+/spring-static-demo-web/src/main/resources/rebel.xml

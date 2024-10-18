@@ -1,12 +1,27 @@
 package com.example.demo.demos.web.flow;
 
+import com.example.demo.dao.bo.flow.Flow;
+import com.example.demo.demos.web.execption.FlowNotFoundException;
+import com.example.demo.service.FlowOperateService;
+import com.example.demo.service.FlowStartProjectsInitService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 /**
@@ -29,108 +44,171 @@ import java.nio.charset.StandardCharsets;
  *     getAll
  *     /api/v1/all?force_refresh=${force_refresh}
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/")
 public class FlowController {
 
-    @Autowired
-    private ObjectMapper objectMapper;
-    @GetMapping("auto_login")
-    public JsonNode autoLogin() throws IOException {
-        String data = "{\n" +
-            "    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NjAyMWE0Yy0xYWZmLTRlMGQtYWZlYy02NWUwZGNlZGJkMmMiLCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwMjU5MTUyfQ.sckNzbPo9fTvrx3FgLms00K4LrP0mMtQGmWXDRoDZVk\",\n" +
-            "    \"refresh_token\": null,\n" +
-            "    \"token_type\": \"bearer\"\n" +
-            "}";
-        return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
-    }
+  @Autowired
+  private FlowOperateService flowOperateService;
 
-    @GetMapping("health")
-    public JsonNode health() throws IOException {
-        String data = "{\"status\":\"ok\"}";
-        return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
-    }
+  @Autowired
+  private FlowStartProjectsInitService flowStartProjectsInitService;
 
-    @GetMapping("users/whoami")
-    public JsonNode whoami() throws IOException {
-        String data = "{\n" +
-            "    \"id\": \"56021a4c-1aff-4e0d-afec-65e0dcedbd2c\",\n" +
-            "    \"username\": \"langflow\",\n" +
-            "    \"profile_image\": null,\n" +
-            "    \"is_active\": true,\n" +
-            "    \"is_superuser\": true,\n" +
-            "    \"create_at\": \"2024-07-02T07:55:27.284790\",\n" +
-            "    \"updated_at\": \"2024-10-12T08:52:32.258509\",\n" +
-            "    \"last_login_at\": \"2024-10-12T08:52:32.254521\"\n" +
-            "}";
-        return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
-    }
+  @Autowired
+  private ObjectMapper objectMapper;
 
-    @GetMapping("folders")
-    public JsonNode folders() throws IOException {
-        String data = "[\n" +
-            "    {\n" +
-            "        \"name\": \"My Projects\",\n" +
-            "        \"description\": \"Manage your own projects. Download and upload folders.\",\n" +
-            "        \"id\": \"1f968b68-91c0-4bae-83cb-c802fd76340d\",\n" +
-            "        \"parent_id\": null\n" +
-            "    },\n" +
-            "    {\n" +
-            "        \"name\": \"Starter Projects\",\n" +
-            "        \"description\": \"Starter projects to help you get started in Langflow.\",\n" +
-            "        \"id\": \"8b9eb34e-2ec8-4a6d-9b1f-7abe71fdc9ed\",\n" +
-            "        \"parent_id\": null\n" +
-            "    }\n" +
-            "]";
-        return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
-    }
+  @GetMapping("auto_login")
+  public JsonNode autoLogin() throws IOException {
+    String data = "{\n"
+        + "    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NjAyMWE0Yy0xYWZmLTRlMGQtYWZlYy02NWUwZGNlZGJkMmMiLCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYwMjU5MTUyfQ.sckNzbPo9fTvrx3FgLms00K4LrP0mMtQGmWXDRoDZVk\",\n"
+        + "    \"refresh_token\": null,\n" + "    \"token_type\": \"bearer\"\n" + "}";
+    return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
+  }
 
-    @GetMapping("folders/{path}")
-    public JsonNode folders(@PathVariable(value = "path", required = false) String path) throws IOException {
-        JsonNode jsonNode = objectMapper.readTree(this.getClass().getClassLoader().getResourceAsStream("folders.json" ));
-        return jsonNode;
-    }
-
-    @GetMapping("variables")
-    public JsonNode variables() throws IOException {
-        String data = "[]";
-        return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
-    }
+  @GetMapping("health")
+  public JsonNode health() throws IOException {
+    String data = "{\"status\":\"ok\"}";
+    return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
+  }
 
 
-    @PostMapping("flows")
-    public JsonNode flows() throws IOException {
-        JsonNode jsonNode = objectMapper.readTree(this.getClass().getClassLoader().getResourceAsStream("flows.json" ));
-        return jsonNode;
+  @GetMapping("variables")
+  public JsonNode variables() throws IOException {
+    String data = "[]";
+    return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
+  }
+
+
+  @PostMapping("flows")
+  @ResponseStatus(HttpStatus.CREATED)
+  public Flow createFlow(@RequestBody Flow flowVo) throws IOException {
+//    log.info("flowCreate flowVo: {}", flowVo);
+    Flow flow = flowOperateService.createFlow(flowVo);
+    log.info("flowCreate: {}", flow);
+    return flow;
+  }
+
+  @PostMapping("flows/batch")
+  @ResponseStatus(HttpStatus.CREATED)
+  public List<Flow> createFlows(@RequestBody List<Flow> flowVos) throws IOException {
+    List<Flow> flows = flowOperateService.createFlows(flowVos);
+    log.info("flowCreates: {}", flows);
+    return flows;
+  }
+
+  @PostMapping("flows/upload")
+  public List<Flow> uploadFile(@RequestParam("file") MultipartFile file) {
+    List<Flow> flows = Lists.newArrayList();
+    if (file.isEmpty()) {
+      return flows;
     }
 
-    @GetMapping("store/check")
-    public JsonNode check() throws IOException {
-        String data = "{\"enabled\":true}";
-        return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
-    }
+    try {
+      // 将文件内容解析为String
+      String content = new String(file.getBytes(), StandardCharsets.UTF_8);
+      JsonNode rootNode = objectMapper.readTree(content.getBytes(StandardCharsets.UTF_8));
+      boolean flowsFlag = rootNode.has("flows");
 
-    @GetMapping("store/check/api_key")
-    public JsonNode api_key() throws IOException {
-        String data = "{\"has_api_key\":false,\"is_valid\":false}";
-        return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
+      if (flowsFlag) {
+        JsonNode flowNodes = rootNode.path("flows");
+        flows.addAll(objectMapper.readValue(flowNodes.toString(), new TypeReference<List<Flow>>() {
+        }));
+      } else {
+        flows.add(objectMapper.readValue(content, Flow.class));
+      }
+      return flowOperateService.createFlows(flows);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+    return flows;
+  }
 
-    @RequestMapping(value = "all", method = RequestMethod.GET)
-    public JsonNode all(@RequestParam(defaultValue = "false") boolean force_refresh) throws IOException {
-        JsonNode jsonNode = objectMapper.readTree(this.getClass().getClassLoader().getResourceAsStream("all.json" ));
-        return jsonNode;
+  @GetMapping("flows/download")
+  public Map<String, List<Flow>> downloadFlows() {
+    List<Flow> flows = flowOperateService.getAllFlows();
+    log.info("downloadFlows: {}", flows);
+    HashMap<String, List<Flow>> data = Maps.newHashMap();
+    data.put("flows", flows);
+    return data;
+  }
+  @GetMapping("flows/{flow_id}")
+  public Flow getFlow(@PathVariable(value = "flow_id") String flowId) {
+    UUID uuid = UUID.fromString(flowId);
+    log.info("getFlow: {}", uuid);
+    Flow flowById = flowOperateService.getFlowById(uuid);
+    if (flowById == null) {
+      log.error("Flow not found flowId: {}", uuid);
+      throw new FlowNotFoundException("Flow not found");
     }
+    return flowById;
+  }
 
-    @GetMapping("config")
-    public JsonNode config() throws IOException {
-        String data = "{\"frontend_timeout\":0}";
-        return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
-    }
+  @GetMapping("flows")
+  public List<Flow> readFlows() {
+    List<Flow> flows = flowOperateService.getAllFlows();
+    log.info("readFlows: {}", flows);
+    return flows;
+  }
 
-    @GetMapping("version")
-    public JsonNode version() throws IOException {
-        String data = "{\"version\":\"1.0.5\",\"package\":\"Langflow\"}";
-        return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
+  @PatchMapping("flows/{flow_id}")
+  public Flow updateFlow(@PathVariable(value = "flow_id") String flowId, @RequestBody Flow flowVo) {
+    UUID uuid = UUID.fromString(flowId);
+    flowVo.setId(uuid);
+    log.info("updateFlow: {}", flowVo);
+    Flow flow = flowOperateService.updateFlow(flowVo);
+    if (flow == null) {
+      throw new FlowNotFoundException("Flow not found");
     }
+    return flow;
+  }
+
+  @DeleteMapping("flows/")
+  public JsonNode deleteFlow(@RequestBody List<String> flowIds) throws IOException {
+    List<UUID> ids = flowIds.stream().map(UUID::fromString).collect(Collectors.toList());
+    log.info("deleteFlow ids: {}", ids);
+    Boolean res = flowOperateService.deleteFlow(ids);
+    if (res == null || !res) {
+      throw new FlowNotFoundException("Flow not found");
+    }
+    String data = "{\"message\": \"Flow deleted successfully\"}";
+    return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
+  }
+
+  @GetMapping("store/check")
+  public JsonNode check() throws IOException {
+    String data = "{\"enabled\":true}";
+    return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
+  }
+
+  @GetMapping("store/check/api_key")
+  public JsonNode api_key() throws IOException {
+    String data = "{\"has_api_key\":false,\"is_valid\":false}";
+    return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
+  }
+
+  @RequestMapping(value = "all", method = RequestMethod.GET)
+  public JsonNode getAll(@RequestParam(defaultValue = "false") boolean force_refresh)
+      throws IOException {
+    JsonNode jsonNode =
+        objectMapper.readTree(this.getClass().getClassLoader().getResourceAsStream("all.json"));
+    return jsonNode;
+  }
+
+  @GetMapping("config")
+  public JsonNode config() throws IOException {
+    String data = "{\"frontend_timeout\":0}";
+    return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
+  }
+
+  @GetMapping("version")
+  public JsonNode version() throws IOException {
+    String data = "{\"version\":\"1.0.5\",\"package\":\"Langflow\"}";
+    return objectMapper.readTree(data.getBytes(StandardCharsets.UTF_8));
+  }
+
+  @GetMapping("init_starter_projects")
+  public void initStarterProjects() {
+    flowStartProjectsInitService.init();
+  }
 }

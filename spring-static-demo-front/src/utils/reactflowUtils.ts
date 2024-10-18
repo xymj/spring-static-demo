@@ -181,6 +181,7 @@ export function updateTemplate(
 
 export const processFlows = (DbData: FlowType[], skipUpdate = true) => {
   let savedComponents: { [key: string]: APIClassType } = {};
+  console.log("processFlows run: ", DbData);
   DbData.forEach((flow: FlowType) => {
     try {
       if (!flow.data) {
@@ -197,6 +198,7 @@ export const processFlows = (DbData: FlowType[], skipUpdate = true) => {
         ] = cloneDeep((flow.data.nodes[0].data as NodeDataType).node!);
         return;
       }
+      console.log("processDataFromFlow call: ", flow);
       processDataFromFlow(flow, !skipUpdate);
     } catch (e) {
       console.log(e);
@@ -207,11 +209,15 @@ export const processFlows = (DbData: FlowType[], skipUpdate = true) => {
 
 export const processDataFromFlow = (flow: FlowType, refreshIds = true) => {
   let data = flow?.data ? flow.data : null;
+  console.log("processDataFromFlow run: ", data);
   if (data) {
+    console.log("processFlowEdges run");
     processFlowEdges(flow);
     //add dropdown option to nodeOutputs
+    console.log("processFlowNodes run");
     processFlowNodes(flow);
     //add animation to text type edges
+    console.log("updateEdges run");
     updateEdges(data.edges);
     // updateNodes(data.nodes, data.edges);
     if (refreshIds) updateIds(data); // Assuming updateIds is defined elsewhere

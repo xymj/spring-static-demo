@@ -38,22 +38,22 @@ export function AuthProvider({ children }): React.ReactElement {
   const navigate = useNavigate();
   const cookies = new Cookies();
   const [accessToken, setAccessToken] = useState<string | null>(
-    cookies.get("access_token_lf") ?? null,
+    cookies.get("access_token_lf") ?? null
   );
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    !!cookies.get("access_token_lf"),
+    !!cookies.get("access_token_lf")
   );
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [userData, setUserData] = useState<Users | null>(null);
   const [autoLogin, setAutoLogin] = useState<boolean>(false);
   const setLoading = useAlertStore((state) => state.setLoading);
   const [apiKey, setApiKey] = useState<string | null>(
-    cookies.get("apikey_tkn_lflw"),
+    cookies.get("apikey_tkn_lflw")
   );
 
   const getFoldersApi = useFolderStore((state) => state.getFoldersApi);
   const setGlobalVariables = useGlobalVariablesStore(
-    (state) => state.setGlobalVariables,
+    (state) => state.setGlobalVariables
   );
   const checkHasStore = useStoreStore((state) => state.checkHasStore);
   const fetchApiData = useStoreStore((state) => state.fetchApiData);
@@ -75,15 +75,22 @@ export function AuthProvider({ children }): React.ReactElement {
   }, []);
 
   function getUser() {
+    console.log("getUser start");
     getLoggedUser()
       .then(async (user) => {
+        console.log(`getUser success ${user}`);
         setUserData(user);
         const isSuperUser = user!.is_superuser;
         setIsAdmin(isSuperUser);
+
+        console.log("getFoldersApi call");
         getFoldersApi(true, true);
+        console.log("getGlobalVariables call");
         const res = await getGlobalVariables();
         setGlobalVariables(res);
+        console.log("checkHasStore call");
         checkHasStore();
+        console.log("fetchApiData call");
         fetchApiData();
       })
       .catch((error) => {
@@ -92,6 +99,7 @@ export function AuthProvider({ children }): React.ReactElement {
   }
 
   function login(newAccessToken: string) {
+    console.log(`login func start ${newAccessToken}`);
     setAccessToken(newAccessToken);
     setIsAuthenticated(true);
     getUser();

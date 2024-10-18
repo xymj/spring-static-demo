@@ -81,18 +81,28 @@ const useFlowsManagerStore = create<FlowsManagerStoreType>((set, get) => ({
   isLoading: true,
   setIsLoading: (isLoading: boolean) => set({ isLoading }),
   refreshFlows: () => {
+    console.log("refreshFlows start");
     return new Promise<void>((resolve, reject) => {
       set({ isLoading: true });
 
       const starterFolderId = useFolderStore.getState().starterProjectId;
+      console.log(`starterFolderId ${starterFolderId}`);
 
+      console.log(`readFlowsFromDatabase start`);
       readFlowsFromDatabase()
         .then((dbData) => {
+          console.log(`readFlowsFromDatabase dbData ${dbData}`);
           if (dbData) {
+            console.log(`processFlows dbData start`);
             const { data, flows } = processFlows(dbData);
+            console.log(`processFlows dbData end`);
+
+            console.log(`processFlows flows ${JSON.stringify(flows)}`);
+            flows.map(item => console.log(`processFlows flows ${item.folder_id}`))
             const examples = flows.filter(
               (flow) => flow.folder_id === starterFolderId,
             );
+            console.log(`examples: ${examples}`);
             get().setExamples(examples);
 
             const flowsWithoutStarterFolder = flows.filter(
@@ -107,6 +117,7 @@ const useFlowsManagerStore = create<FlowsManagerStoreType>((set, get) => ({
                 ["saved_components"]: data,
               }),
             }));
+            console.log(`setIsLoading false`);
             set({ isLoading: false });
             resolve();
           }

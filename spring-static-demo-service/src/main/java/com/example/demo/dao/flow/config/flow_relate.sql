@@ -50,6 +50,9 @@ CREATE INDEX index_endpoint_name ON flow (endpoint_name);
 CREATE INDEX index_user_id ON flow (user_id);
 CREATE INDEX index_folder_id ON flow (folder_id);
 
+INSERT INTO flow (name, description, icon, icon_bg_color, data, is_component, updated_at, webhook, endpoint_name, user_id, folder_id)
+VALUES ('Sample Flow', 'Sample Flow', null, null, '{"key":"value"}'::jsonb, null, CURRENT_TIMESTAMP, null, 'sample-flow', 'f178f98a-f3e3-445f-8507-5d32f8aeeeca','f3d0b3ea-bc59-41c6-9e0a-acadbc77d6ce');
+
 
 -- 字段解释
 -- id: 主键，使用 UUID 类型，默认值为生成的 UUID。
