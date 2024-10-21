@@ -1,5 +1,6 @@
 package com.example.demo.demos.config;
 
+import com.example.demo.demos.web.chat.ChatWebSocketHandler;
 import com.example.demo.demos.web.socket.MyBinaryWebSocketHandler;
 import com.example.demo.demos.web.socket.MyTextWebSocketHandler;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
         registry.addHandler(new MyTextWebSocketHandler(), "/websocket-endpoint")
                 .setAllowedOrigins("*"); // 允许的源可以根据需要进行配置
         registry.addHandler(new MyBinaryWebSocketHandler(), "/binary-websocket-endpoint")
+            .setAllowedOrigins("*"); // 允许的源可以根据需要进行配置
+        registry.addHandler(new ChatWebSocketHandler(), "/chat")
             .setAllowedOrigins("*"); // 允许的源可以根据需要进行配置
     }
 }
